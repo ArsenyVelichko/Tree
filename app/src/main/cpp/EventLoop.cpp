@@ -37,16 +37,18 @@ void EventLoop::onAppCmd(android_app* app, int32_t cmd) {
     }
 }
 
-void EventLoop::addController(IController* controller) {
-    m_controllers.push_back(controller);
-}
-
-void EventLoop::addView(IView* view) {
-    m_views.push_back(view);
-}
-
 void EventLoop::update() {
     for (auto view : m_views) {
         view->update();
+    }
+}
+
+EventLoop::~EventLoop() {
+    for (auto view : m_views) {
+        delete view;
+    }
+
+    for (auto controller : m_controllers) {
+        delete controller;
     }
 }

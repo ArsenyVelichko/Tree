@@ -1,20 +1,23 @@
 #include <android_native_app_glue.h>
 
-#include "Log/Log.h"
+#include <Log.h>
+
 #include "EventLoop.h"
-#include "Tree/TreeController.h"
+#include "templates/ControllerTemplate.h"
+#include "OpenGL/GLView.h"
 
 void android_main(android_app* app) {
-    auto tree = new Tree;
-    auto view = new TreeView(app);
-    auto controller = new TreeController(tree, view);
+    log_info("Start");
+
+    auto view = new GLView(app);
+    auto controller = new ControllerTemplate<GLView>(view);
+
+    controller->bindAction(APP_CMD_INIT_WINDOW, &GLView::init);
+    controller->bindAction(APP_CMD_TERM_WINDOW, &GLView::term);
 
     EventLoop loop(app);
-    loop.addController(controller);
     loop.addView(view);
-    loop.run();
+    loop.addController(controller);
 
-    delete controller;
-    delete tree;
-    delete view;
+    loop.run();
 }

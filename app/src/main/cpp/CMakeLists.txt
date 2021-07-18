@@ -9,7 +9,6 @@ set(CMAKE_SHARED_LINKER_FLAGS
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(interfaces)
 include_directories(Log)
 
 file(GLOB_RECURSE SOURCE_FILES *.cpp)
@@ -20,10 +19,12 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME}  PRIVATE
         ${ANDROID_NDK}/sources/android/native_app_glue)
 
-# add lib dependencies
+add_subdirectory(glm)
+
 target_link_libraries(${PROJECT_NAME}
         android
         native_app_glue
         EGL
-        GLESv1_CM
-        log)
+        GLESv3
+        log
+        glm)
