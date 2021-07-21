@@ -2,15 +2,15 @@
 #define TREE_GLPAINTER_H
 
 #include <memory>
-#include <glm/matrix.hpp>
 
+#include "../Geometry.h"
 #include "../GLShader.h"
 #include "../GraphicsItems/GLGraphicsItem.h"
 
 enum class ShaderVariable {
     Position,
     TexCoordinate,
-    MVPMatrix,
+    ModelMatrix,
 };
 
 class GLPainter {

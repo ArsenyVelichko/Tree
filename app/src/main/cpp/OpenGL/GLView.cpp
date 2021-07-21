@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "GLView.h"
 #include "GraphicsItems/Line2D.h"
+#include "GraphicsItems/SierpinskiTriangle.h"
 #include "Painters/MonoPainter.h"
 
 GLView::GLView(android_app* app) : m_app(app) {}
@@ -75,34 +76,20 @@ void GLView::init() {
         log_info("OpenGL Info: %s", info);
     }
 
+    if (m_scene) {
+        m_scene->create(m_app);
+    }
+
     m_isInit = true;
-
-    //TODO Remove hardcode
-    auto line = new Line2D(glm::vec2(-1, -1), glm::vec2(1, 1));
-    auto painter = new MonoPainter(m_app->activity->assetManager);
-
-    std::string painterName = "Mono";
-    registerPainter(painter, painterName);
-    addItem(line, painterName);
 }
 
 void GLView::update() {
     if (!m_isInit) { return; }
 
-    glClearColor(0.3f, 0.5f, 0.1f, 1.0f);
+    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (auto& [key, value] : m_graphicsMap) {
-        auto painter = value.first;
-
-        painter->beginPaint();
-
-        for (auto& item : value.second) {
-            painter->drawItem(item);
-        }
-
-        painter->endPaint();
-    }
+    m_scene->update();
 
     if (!eglSwapBuffers(m_display, m_surface)) {
         log_error("Swap buffers error");
@@ -130,26 +117,17 @@ void GLView::term() {
     m_isInit = false;
 }
 
-void GLView::registerPainter(GLPainter* painter, const std::string& name) {
-    m_graphicsMap[name] = std::make_pair(painter, std::vector<GLGraphicsItem*>());
-}
-
-void GLView::addItem(GLGraphicsItem* item, const std::string& painterName) {
-    if (m_graphicsMap.find(painterName) == m_graphicsMap.end()) {
-        log_error("Painter not found");
+void GLView::setScene(GLGraphicsScene* scene) {
+    //TODO Add ability to change scene after initialization
+    if (m_isInit) {
+        log_warning("View already initialized");
         return;
     }
 
-    m_graphicsMap[painterName].second.push_back(item);
+    delete m_scene;
+    m_scene = scene;
 }
 
-
 GLView::~GLView() {
-    for (auto& [key, value] : m_graphicsMap) {
-        delete value.first;
-
-        for (auto& item : value.second) {
-            delete item;
-        }
-    }
+    delete m_scene;
 }

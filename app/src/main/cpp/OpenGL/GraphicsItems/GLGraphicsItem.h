@@ -1,7 +1,7 @@
 #ifndef TREE_GLGRAPHICSITEM_H
 #define TREE_GLGRAPHICSITEM_H
 
-#include <memory>
+#include "../Geometry.h"
 
 class GLPainter;
 

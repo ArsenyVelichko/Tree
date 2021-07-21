@@ -6,29 +6,37 @@
 #include <vector>
 
 #include "IView.h"
-#include "IController.h"
+#include "ICmdHandler.h"
+#include "IInputHandler.h"
 
 class EventLoop {
 public:
     explicit EventLoop(android_app* app);
     ~EventLoop();
 
-    void addController(IController* controller);
+    void addCmdHandler(ICmdHandler* cmdHandler);
+    void addInputHandler(IInputHandler* inputHandler);
     void addView(IView* view);
 
     void run();
     void update();
 
     static void onAppCmd(android_app* app, int32_t cmd);
+    static int32_t onAppInput(android_app* app, AInputEvent* event);
 
 private:
     android_app* m_app;
-    std::vector<IController*> m_controllers;
+    std::vector<ICmdHandler*> m_cmdHandlers;
+    std::vector<IInputHandler*> m_inputHandlers;
     std::vector<IView*> m_views;
 };
 
-inline void EventLoop::addController(IController* controller) {
-    m_controllers.push_back(controller);
+inline void EventLoop::addCmdHandler(ICmdHandler* cmdHandler) {
+    m_cmdHandlers.push_back(cmdHandler);
+}
+
+inline void EventLoop::addInputHandler(IInputHandler* inputHandler) {
+    m_inputHandlers.push_back(inputHandler);
 }
 
 inline void EventLoop::addView(IView* view) {

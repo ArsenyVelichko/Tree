@@ -1,8 +1,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <glm/gtc/type_ptr.hpp>
-
 #include "Log.h"
 #include "MonoPainter.h"
 #include "../GLShader.h"
@@ -25,9 +23,9 @@ MonoPainter::MonoPainter(AAssetManager* assetManager) {
 void MonoPainter::beginPaint() {
     m_shaderProgram.bind();
 
-    //TODO add transform functionality to painters
-    glm::mat4 m(1.0f);
-    GLint mvpMatrixLoc = location(ShaderVariable::MVPMatrix);
+    //TODO Add setTransform to GLPainter interface
+    GLint mvpMatrixLoc = location(ShaderVariable::ModelMatrix);
+    FloatMat4 m = glm::ortho(-1., 1., -2.5, 2.5);
     glUniformMatrix4fv(mvpMatrixLoc, 1, GL_FALSE, glm::value_ptr(m));
 
     m_isActive = true;
@@ -55,7 +53,7 @@ GLint MonoPainter::location(ShaderVariable var) const {
             loc = m_shaderProgram.attribLocation("position");
             break;
 
-        case ShaderVariable::MVPMatrix:
+        case ShaderVariable::ModelMatrix:
             loc = m_shaderProgram.uniformLocation("mvpMatrix");
             break;
 

@@ -5,6 +5,7 @@
 EventLoop::EventLoop(android_app* app) : m_app(app) {
     app->userData = this;
     app->onAppCmd = onAppCmd;
+    app->onInputEvent = onAppInput;
 }
 
 void EventLoop::run() {
@@ -12,8 +13,8 @@ void EventLoop::run() {
 
     while (true) {
         //Process events
-        int events, pollResult;
-        while ((pollResult = ALooper_pollAll(-1, nullptr, &events, (void**)&source)) >= 0) {
+        int events;
+        while (ALooper_pollAll(-1, nullptr, &events, (void**)&source) >= 0) {
 
             if (source != nullptr) {
                 log_info("Event handled");
@@ -32,9 +33,19 @@ void EventLoop::run() {
 void EventLoop::onAppCmd(android_app* app, int32_t cmd) {
     auto* eventLoop = static_cast<EventLoop*>(app->userData);
 
-    for (auto controller : eventLoop->m_controllers) {
-        controller->processCmd(cmd);
+    for (auto cmdHandler : eventLoop->m_cmdHandlers) {
+        cmdHandler->handleCmd(cmd);
     }
+}
+
+int32_t EventLoop::onAppInput(android_app* app, AInputEvent* event) {
+    auto* eventLoop = static_cast<EventLoop*>(app->userData);
+
+    bool isHandled = false;
+    for (auto inputHandler : eventLoop->m_inputHandlers) {
+        isHandled &= inputHandler->handleInput(event);
+    }
+    return isHandled;
 }
 
 void EventLoop::update() {
@@ -48,7 +59,11 @@ EventLoop::~EventLoop() {
         delete view;
     }
 
-    for (auto controller : m_controllers) {
-        delete controller;
+    for (auto cmdHandler : m_cmdHandlers) {
+        delete cmdHandler;
+    }
+
+    for (auto inputHandler : m_inputHandlers) {
+        delete inputHandler;
     }
 }
