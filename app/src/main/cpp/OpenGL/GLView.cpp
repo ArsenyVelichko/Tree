@@ -77,7 +77,7 @@ void GLView::init() {
     }
 
     if (m_scene) {
-        m_scene->create(m_app);
+        m_scene->create(m_app, m_width, m_height);
     }
 
     m_isInit = true;

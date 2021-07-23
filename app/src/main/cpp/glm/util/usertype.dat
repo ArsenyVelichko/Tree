@@ -88,7 +88,7 @@ namespace
 using
 
 layout 
-location
+attribLocation
 smooth
 flat
 noperspective

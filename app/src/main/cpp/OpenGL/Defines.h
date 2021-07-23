@@ -1,5 +1,5 @@
-#ifndef TREE_GEOMETRY_H
-#define TREE_GEOMETRY_H
+#ifndef TREE_DEFINES_H
+#define TREE_DEFINES_H
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec2.hpp>
@@ -11,4 +11,6 @@ using DoubleVec2 = glm::dvec2;
 using FloatMat4 = glm::mat4;
 using DoubleMat4 = glm::dmat4;
 
-#endif //TREE_GEOMETRY_H
+using Color = glm::vec4;
+
+#endif //TREE_DEFINES_H

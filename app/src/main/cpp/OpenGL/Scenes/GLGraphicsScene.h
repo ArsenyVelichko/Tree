@@ -12,7 +12,7 @@ class GLGraphicsScene {
 public:
     virtual ~GLGraphicsScene();
 
-    virtual void create(android_app* app) {}
+    virtual void create(android_app* app, size_t width, size_t height) {}
     void update();
 
     void registerPainter(GLPainter* painter, const std::string& name);

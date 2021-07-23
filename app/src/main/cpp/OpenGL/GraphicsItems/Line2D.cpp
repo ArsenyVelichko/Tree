@@ -5,7 +5,10 @@
 #include "../Painters/GLPainter.h"
 #include "Line2D.h"
 
-Line2D::Line2D(const DoubleVec2& p1, const DoubleVec2& p2) : m_points{ p1, p2 }{
+Line2D::Line2D(const DoubleVec2& p1, const DoubleVec2& p2) {
+    m_points[0] = p1;
+    m_points[1] = p2;
+
     glGenBuffers(1, &m_vbo);
 
     GLenum err = glGetError();
@@ -21,9 +24,9 @@ Line2D::Line2D(const DoubleVec2& p1, const DoubleVec2& p2) : m_points{ p1, p2 }{
 void Line2D::draw(const GLPainter* painter) const {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
-    GLint positionLoc = painter->location(ShaderVariable::Position);
+    GLint positionLoc = painter->attribLocation(ShaderAttribute::Position);
     if (positionLoc == -1) {
-        log_error("Position location not found");
+        log_error("Position attribLocation not found");
         return;
     }
 
@@ -39,11 +42,11 @@ Line2D::~Line2D() {
     glDeleteBuffers(1, &m_vbo);
 }
 
-DoubleVec2 Line2D::firstPoint() const {
+DoubleVec2 Line2D::p1() const {
     return m_points[0];
 }
 
-DoubleVec2 Line2D::secondPoint() const {
+DoubleVec2 Line2D::p2() const {
     return m_points[1];
 }
 

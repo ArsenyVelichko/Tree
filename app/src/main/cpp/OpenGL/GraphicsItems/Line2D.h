@@ -10,8 +10,8 @@ public:
     Line2D(const DoubleVec2& p1, const DoubleVec2& p2);
     ~Line2D();
 
-    DoubleVec2 firstPoint() const;
-    DoubleVec2 secondPoint() const;
+    DoubleVec2 p1() const;
+    DoubleVec2 p2() const;
 
     double length() const;
     DoubleVec2 toVec() const;

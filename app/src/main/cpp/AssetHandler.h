@@ -5,7 +5,6 @@
 
 class AssetHandler {
 public:
-
     AssetHandler(AAssetManager* manager, const char* fileName, int mode = AASSET_MODE_UNKNOWN);
     ~AssetHandler();
 

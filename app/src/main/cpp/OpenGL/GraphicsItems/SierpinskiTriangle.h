@@ -7,12 +7,11 @@
 
 class SierpinskiTriangle : public GLGraphicsItem {
 public:
-    //TODO add max size parameter
-    SierpinskiTriangle(const DoubleVec2& p1, const DoubleVec2& p2);
+    SierpinskiTriangle(const DoubleVec2& p1, const DoubleVec2& p2, size_t maxSize = 10);
     ~SierpinskiTriangle();
 
     void enlarge();
-    //TODO add reduce function
+    void reduce();
 
     void draw(const GLPainter *painter) const override;
 
@@ -21,6 +20,7 @@ private:
 
     std::vector<FloatVec2> m_points;
     size_t m_currSize = 0;
+    size_t m_maxSize;
     GLuint m_vbo;
 };
 

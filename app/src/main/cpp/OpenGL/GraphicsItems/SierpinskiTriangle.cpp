@@ -8,7 +8,8 @@
 #include "SierpinskiTriangle.h"
 #include "../GLException.h"
 
-SierpinskiTriangle::SierpinskiTriangle(const DoubleVec2& p1, const DoubleVec2& p2) {
+SierpinskiTriangle::SierpinskiTriangle(const DoubleVec2& p1, const DoubleVec2& p2, size_t maxSize)
+    : m_maxSize(maxSize) {
     m_points.emplace_back(p1);
     m_points.emplace_back(p2);
 
@@ -27,6 +28,11 @@ SierpinskiTriangle::~SierpinskiTriangle() {
 }
 
 void SierpinskiTriangle::enlarge() {
+    if (m_currSize == m_maxSize) {
+        log_warning("Max size reached");
+        return;
+    }
+
     size_t newSize = 3 * m_points.size() - 2;
     std::vector<FloatVec2> newPoints(newSize);
 
@@ -57,12 +63,30 @@ void SierpinskiTriangle::enlarge() {
     m_currSize++;
 }
 
+void SierpinskiTriangle::reduce() {
+    if (m_currSize == 0) {
+        log_warning("Min size reached");
+        return;
+    }
+
+    size_t newSize = (m_points.size() + 2) / 3;
+    std::vector<FloatVec2> newPoints(newSize);
+
+    for (size_t i = 0; i < newSize; i ++) {
+        newPoints[i] = m_points[3 * i];
+    }
+    m_points = newPoints;
+
+    uploadToVBO();
+    m_currSize--;
+}
+
 void SierpinskiTriangle::draw(const GLPainter* painter) const {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
-    GLint positionLoc = painter->location(ShaderVariable::Position);
+    GLint positionLoc = painter->attribLocation(ShaderAttribute::Position);
     if (positionLoc == -1) {
-        log_error("Position location not found");
+        log_error("Position attribLocation not found");
         return;
     }
 

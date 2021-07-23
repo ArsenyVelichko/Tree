@@ -22,12 +22,6 @@ MonoPainter::MonoPainter(AAssetManager* assetManager) {
 
 void MonoPainter::beginPaint() {
     m_shaderProgram.bind();
-
-    //TODO Add setTransform to GLPainter interface
-    GLint mvpMatrixLoc = location(ShaderVariable::ModelMatrix);
-    FloatMat4 m = glm::ortho(-1., 1., -2.5, 2.5);
-    glUniformMatrix4fv(mvpMatrixLoc, 1, GL_FALSE, glm::value_ptr(m));
-
     m_isActive = true;
 }
 
@@ -36,25 +30,23 @@ void MonoPainter::endPaint() {
     m_isActive = false;
 }
 
-void MonoPainter::drawItem(const GLGraphicsItem* item) const {
+void MonoPainter::drawItem(const GLGraphicsItem* item) {
     if (!m_isActive) {
         log_error("Call beginPaint before drawing");
         return;
     }
 
+    uploadColor();
+    uploadTransform(item->transform());
     item->draw(this);
 }
 
-GLint MonoPainter::location(ShaderVariable var) const {
+GLint MonoPainter::attribLocation(ShaderAttribute var) const {
     GLint loc;
 
     switch (var) {
-        case ShaderVariable::Position:
+        case ShaderAttribute::Position:
             loc = m_shaderProgram.attribLocation("position");
-            break;
-
-        case ShaderVariable::ModelMatrix:
-            loc = m_shaderProgram.uniformLocation("mvpMatrix");
             break;
 
         default:
@@ -63,4 +55,15 @@ GLint MonoPainter::location(ShaderVariable var) const {
     }
 
     return loc;
+}
+
+void MonoPainter::uploadTransform(const DoubleMat4& itemTransform) {
+    GLint mvpMatLoc = m_shaderProgram.uniformLocation("mvpMat");
+    FloatMat4 mvpMatrix = transform() * itemTransform;
+    glUniformMatrix4fv(mvpMatLoc, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+}
+
+void MonoPainter::uploadColor() {
+    GLint colorLoc = m_shaderProgram.uniformLocation("color");
+    glUniform4fv(colorLoc, 1, glm::value_ptr(m_color));
 }

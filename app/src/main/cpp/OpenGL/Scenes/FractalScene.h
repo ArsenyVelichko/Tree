@@ -6,10 +6,13 @@
 
 class FractalScene : public GLGraphicsScene {
 public:
-    void create(android_app* app) override;
+    void create(android_app* app, size_t width, size_t height) override;
     void touchEvent(AInputEvent* event);
 
 private:
+    size_t m_width;
+    size_t m_height;
+
     SierpinskiTriangle* m_triangle = nullptr;
 };
 
